@@ -16,6 +16,7 @@ import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 
+
 public class Main extends Application{
     Label HammDist_Label;
     Button Show_Station;
@@ -43,6 +44,15 @@ public class Main extends Application{
 
 
         slider = new Slider(1,4,1 );
+        slider.valueProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(
+                    ObservableValue<? extends Number> observableValue,
+                    Number oldValue,
+                    Number newValue) {
+                HammDist_Field.setText(String.valueOf(slider.getValue()));
+            }
+        });
         slider.setSnapToTicks(true);
         slider.setMajorTickUnit(4);
         slider.setShowTickMarks(true);
