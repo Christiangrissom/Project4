@@ -37,8 +37,8 @@ public class Main extends Application{
 
         HammDist_Label = new Label();
         HammDist_Label.setText("Enter Hamming Dist:");
-        Font font = Font.font("Verdana", FontWeight.BOLD, 12);
-        HammDist_Label.setFont(font);
+        Font HammDistLabelFont = Font.font("Verdana", FontWeight.BOLD, 12);
+        HammDist_Label.setFont(HammDistLabelFont);
         layout.add(HammDist_Label, 0, 0);
 
 
@@ -50,11 +50,13 @@ public class Main extends Application{
                     ObservableValue<? extends Number> observableValue,
                     Number oldValue,
                     Number newValue) {
-                HammDist_Field.setText(String.valueOf(slider.getValue()));
+                HammDist_Field.setText(String.valueOf((int)slider.getValue()));
             }
         });
+
         slider.setSnapToTicks(true);
-        slider.setMajorTickUnit(4);
+        slider.setMajorTickUnit(1);
+        slider.setMinorTickCount(0);
         slider.setShowTickMarks(true);
         slider.setShowTickLabels(true);
         slider.setValueChanging(true);
@@ -63,14 +65,13 @@ public class Main extends Application{
         HammDist_Field = new TextField();
         HammDist_Field.setEditable(false);
         HammDist_Field.setPrefColumnCount(15);
-
-        HammDist_Field.setText("9");
+        HammDist_Field.setText("1");
         layout.add(HammDist_Field, 1, 0);
 
         Show_Station = new Button();
-        Show_Station.setText("Do not click me");
+        Show_Station.setText("Show Station");
         Show_Station.setOnAction(e->System.out.println("WOW! It worked!"));
-        //layout.add(Show_Station);
+        layout.add(Show_Station,0,3);
 
         gridPadding = new Insets(10,10,10,10);
         layout.setPadding(gridPadding);
