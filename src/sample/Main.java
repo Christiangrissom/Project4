@@ -27,7 +27,7 @@ public class Main extends Application{
 
 
 
-        HammDist_Label = new Label();
+        HammDist_Label = new Label(); 
         HammDist_Label.setText("Enter Hamming Dist:");
         layout.add(HammDist_Label, 0, 0);
 
