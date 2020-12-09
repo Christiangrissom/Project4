@@ -16,6 +16,7 @@ import javafx.stage.Stage;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Scanner;
@@ -42,7 +43,27 @@ public class Main extends Application{
     TextField Distance_Four_T;
     TextField Add_Station_T;
 
-    private static ArrayList<String> DD = new ArrayList();//being referenced and initialized by the method initialize
+
+
+
+
+    private static ArrayList<String> Dist_Array_1 = new ArrayList();
+
+    private static ArrayList<String> Dist_Array_2 = new ArrayList();
+
+    private static ArrayList<String> Dist_Array_3 = new ArrayList();
+
+    private static ArrayList<String> Dist_Array_4 = new ArrayList();
+
+
+    private static ArrayList<String> Array_To_Display = new ArrayList();//array used to display alike stations
+
+    private static ArrayList<String> DropD = new ArrayList();//being referenced and initialized by the method initialize
+
+    private static Label User_Console = new Label();
+
+
+
     Insets gridPadding;
     Slider slider;
     GridPane layout;
@@ -94,23 +115,16 @@ public class Main extends Application{
         Show_Station = new Button();
         Show_Station.setText("Show Station");
         Show_Station.setOnAction(actionEvent -> {//change this to work for the next part of the code
-            if(true){
-            System.out.println("The button works, and so does the if statement.");
-            }
+            calculation_HD((int)slider.getValue(),(String)Dropdown.getValue());
+            stationListInitialize();
         });
         layout.add(Show_Station,0,3);
 
 
-        ArrayList<String> SL = new ArrayList();//use a method or a class to simplify this
-        SL.add("STA1");
-        SL.add("STA2");
-        SL.add("STA3");
-        SL.add("STA4");
-        SL.remove("STA4");
-        ObservableList<String> names = FXCollections.observableArrayList(SL);
-        StationList = new ListView<String>(names);
-        StationList.setEditable(false);
-        layout.add(StationList,0,4);
+        User_Console.setText("Warnings and important messages will appear here.");
+        stationListInitialize();
+
+
 
         Compare_Label = new Label();
         Compare_Label.setFont(BoldFont);
@@ -122,7 +136,8 @@ public class Main extends Application{
         Calc_HD = new Button();
         Calc_HD.setText("Calculate HD");
         Calc_HD.setOnAction(actionEvent -> {
-            calculation_HD((int)slider.getValue(),Dropdown.getId());
+            calculation_HD((int)slider.getValue(),(String)Dropdown.getValue());
+            distanceUpdate();
         });
         layout.add(Calc_HD,0,6);
 
@@ -133,7 +148,8 @@ public class Main extends Application{
 
         Distance_Zero_T = new TextField();
         Distance_Zero_T.setEditable(false);
-        Distance_Zero_T.setText("Not finished");
+        Distance_Zero_T.setText("0");
+        Distance_Zero_T.setMaxWidth(120);
         layout.addRow(7,Distance_Zero_T);
 
         Distance_One = new Label();
@@ -143,7 +159,9 @@ public class Main extends Application{
 
         Distance_One_T = new TextField();
         Distance_One_T.setEditable(false);
-        Distance_One_T.setText("Not finished");
+        Distance_One_T.setText("0");
+        Distance_One_T.setMaxWidth(120);
+
         layout.addRow(8,Distance_One_T);
 
 
@@ -154,7 +172,9 @@ public class Main extends Application{
 
         Distance_Two_T = new TextField();
         Distance_Two_T.setEditable(false);
-        Distance_Two_T.setText("Not finished");
+        Distance_Two_T.setText("0");
+        Distance_Two_T.setMaxWidth(120);
+
         layout.addRow(9,Distance_Two_T);
 
 
@@ -165,7 +185,8 @@ public class Main extends Application{
 
         Distance_Three_T = new TextField();
         Distance_Three_T.setEditable(false);
-        Distance_Three_T.setText("Not finished");
+        Distance_Three_T.setText("0");
+        Distance_Three_T.setMaxWidth(120);
         layout.addRow(10,Distance_Three_T);
 
 
@@ -175,28 +196,33 @@ public class Main extends Application{
         layout.add(Distance_Four, 0,11);
 
         Distance_Four_T = new TextField();
+        Distance_Four_T.setMaxWidth(120);
         Distance_Four_T.setEditable(false);
-        Distance_Four_T.setText("Not finished");
+        Distance_Four_T.setText("0");
         layout.addRow(11,Distance_Four_T);
 
         Add_Station = new Button();
         Add_Station.setText("Add Station");
         Add_Station.setOnAction(actionEvent -> {
+            System.out.println("the text in the box to the left is: " + Add_Station_T.getText());
+            System.out.println("The value of that is:" + Add_Station_T.getText().length());
             testForSimilar(Add_Station_T.getText());
-            System.out.println("Add_Station button works.");
         });
         layout.add(Add_Station,0,12);
 
         Add_Station_T = new TextField();
         Add_Station_T.setEditable(true);
-        Add_Station_T.setText("");
+        Add_Station_T.setText("Enter a station ID here.");
+        Add_Station_T.setMaxWidth(140);
         layout.add(Add_Station_T,1,12);
 
+
+        initializeUser();
 
 
         gridPadding = new Insets(10,10,10,10);
         layout.setPadding(gridPadding);
-        layout.setHgap(2);
+        layout.setHgap(10);
         layout.setVgap(10);
 
         Scene scene = new Scene(layout);
@@ -206,8 +232,29 @@ public class Main extends Application{
         primaryStage.show();
     }
 
+    private void initializeUser() {
+        User_Console.setWrapText(true);
+        User_Console.setMaxWidth(180);
+        User_Console.setMaxHeight(400);
+        Font User_Console_Font = Font.font("Verdana", FontWeight.EXTRA_BOLD, 14);
+        User_Console.setFont(User_Console_Font);
+        layout.add(User_Console,1,4);
+    }
+
+    public void changeUser(String text){
+        User_Console.setText(text);
+    }
+
+
+    private void stationListInitialize() {
+        ObservableList<String> names = FXCollections.observableArrayList(Array_To_Display);
+        StationList = new ListView<String>(names);
+        StationList.setEditable(false);
+        layout.add(StationList,0,4);
+    }
+
     private void initializeDD() {
-        ObservableList<String> Drop = FXCollections.observableArrayList(DD);
+        ObservableList<String> Drop = FXCollections.observableArrayList(DropD);
         Dropdown = new ComboBox(Drop);
         Dropdown.setEditable(false);
         layout.add(Dropdown,1,5);
@@ -220,12 +267,12 @@ public class Main extends Application{
     }
 
     private static void initialize() {
-        DD.clear();
+        DropD.clear();
         try {
             FileReader file = new FileReader("Mesonet.txt");
             Scanner input = new Scanner(file);
             while(input.hasNextLine()) {
-                DD.add(input.nextLine());
+                DropD.add(input.nextLine());
             }
 
         } catch (FileNotFoundException e) {
@@ -235,27 +282,71 @@ public class Main extends Application{
 
     }
 
-    public void testForSimilar(String s){
-        if(DD.contains(s)){
-            System.out.println("That already exists!");
+    public void testForSimilar(String ID){
+        if(DropD.contains(ID)){
+            changeUser("That station ID already exists!");
         }
-        else{
-            System.out.println("The station ID has been added.");
-            DD.add(s);
-            Collections.sort(DD);
+        else if(ID.length()!=4) {
+            changeUser("Please enter a valid station ID to add a station. The ID needs to be 4 letters / numbers.");
+        }
+         else {
+            changeUser("The station ID has been added to the list below.");
+            DropD.add(ID);
+            Collections.sort(DropD);
             initializeDD();
         }
     }
-    public void calculation_HD(int hammNum, String ID){
-        if(ID==null){
-            System.out.println("Please enter a valid station ID.");
+    public void calculation_HD(int hammNum, String ID){//modify SL to fit the list of stations
+        int NumOfChar = 4;
+        int diffChars = 0;
+        Array_To_Display.clear();
+        Dist_Array_1.clear();
+        Dist_Array_2.clear();
+        Dist_Array_3.clear();
+        Dist_Array_4.clear();
+        if(ID == null ||ID.length()!=4){
+            changeUser("Please select a station ID from the list below.");
         }
         else{
+            for(int x = 0; x<DropD.size(); x++){
+                for(int y = 0; y<NumOfChar; y++){
+                if(ID.charAt(y)!=DropD.get(x).charAt(y)){
+                    diffChars++;
+                }
+
+
+
+                }
+                switch (diffChars) {
+                    case 0-> {}
+                    case 1-> Dist_Array_1.add(DropD.get(x));
+                    case 2-> Dist_Array_2.add(DropD.get(x));
+                    case 3-> Dist_Array_3.add(DropD.get(x));
+                    case 4-> Dist_Array_4.add(DropD.get(x));
+                }
+                diffChars = 0;
+            }
+            switch (hammNum){
+                case 1-> Array_To_Display.addAll(Dist_Array_1);
+                case 2-> Array_To_Display.addAll(Dist_Array_2);
+                case 3-> Array_To_Display.addAll(Dist_Array_3);
+                case 4-> Array_To_Display.addAll(Dist_Array_4);
+            }
+            stationListInitialize();
+            distanceUpdate();
+            System.out.println("ID.length is equal to " + ID.length());
             System.out.println("hammNum is: " + hammNum);
             System.out.println("Station ID is: " + ID);
         }
     }
 
+    private void distanceUpdate() {
+        Distance_Zero_T.setText("1");
+        Distance_One_T.setText(String.valueOf(Dist_Array_1.size()));
+        Distance_Two_T.setText(String.valueOf(Dist_Array_2.size()));
+        Distance_Three_T.setText(String.valueOf(Dist_Array_3.size()));
+        Distance_Four_T.setText(String.valueOf(Dist_Array_4.size()));
+    }
 
 
 }
