@@ -12,13 +12,12 @@ import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
-import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
-import javax.swing.text.LabelView;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Scanner;
 
 
@@ -43,11 +42,12 @@ public class Main extends Application{
     TextField Distance_Four_T;
     TextField Add_Station_T;
 
-
+    private static ArrayList<String> DD = new ArrayList();//being referenced and initialized by the method initialize
     Insets gridPadding;
     Slider slider;
     GridPane layout;
     Controller c = new Controller();
+
 
     @Override
     public void start(Stage primaryStage) throws Exception{
@@ -117,19 +117,12 @@ public class Main extends Application{
         Compare_Label.setText("Compare with:");
         layout.add(Compare_Label,0,5);
 
-        ArrayList<String> DD = new ArrayList();//use a method or a class to simplify this
-        DD.add("Test1");
-        DD.add("Test2");
-        DD.add("Test3");
-        ObservableList<String> Drop = FXCollections.observableArrayList(DD);
-        Dropdown = new ComboBox(Drop);
-        Dropdown.setEditable(false);
-        layout.add(Dropdown,1,5);
+        initializeDD();
 
         Calc_HD = new Button();
         Calc_HD.setText("Calculate HD");
         Calc_HD.setOnAction(actionEvent -> {
-            System.out.println("The Calc_HD button works");
+            calculation_HD((int)slider.getValue(),Dropdown.getId());
         });
         layout.add(Calc_HD,0,6);
 
@@ -189,7 +182,7 @@ public class Main extends Application{
         Add_Station = new Button();
         Add_Station.setText("Add Station");
         Add_Station.setOnAction(actionEvent -> {
-            testMethod(Add_Station_T.getText());
+            testForSimilar(Add_Station_T.getText());
             System.out.println("Add_Station button works.");
         });
         layout.add(Add_Station,0,12);
@@ -213,6 +206,13 @@ public class Main extends Application{
         primaryStage.show();
     }
 
+    private void initializeDD() {
+        ObservableList<String> Drop = FXCollections.observableArrayList(DD);
+        Dropdown = new ComboBox(Drop);
+        Dropdown.setEditable(false);
+        layout.add(Dropdown,1,5);
+    }
+
 
     public static void main(String[] args) {
             initialize();
@@ -220,26 +220,42 @@ public class Main extends Application{
     }
 
     private static void initialize() {
+        DD.clear();
         try {
             FileReader file = new FileReader("Mesonet.txt");
             Scanner input = new Scanner(file);
             while(input.hasNextLine()) {
-
-
-
-
-                
+                DD.add(input.nextLine());
             }
 
         } catch (FileNotFoundException e) {
-            System.out.println("Something has went wrong in DateTimeThree's constructor!");
+            System.out.println("Something has went wrong in Main! (Reading the file)");
             e.printStackTrace();
         }
 
     }
 
-    public void testMethod(String s){
-        System.out.println("testMethod was passed the following number: " + s);
+    public void testForSimilar(String s){
+        if(DD.contains(s)){
+            System.out.println("That already exists!");
+        }
+        else{
+            System.out.println("The station ID has been added.");
+            DD.add(s);
+            Collections.sort(DD);
+            initializeDD();
+        }
     }
+    public void calculation_HD(int hammNum, String ID){
+        if(ID==null){
+            System.out.println("Please enter a valid station ID.");
+        }
+        else{
+            System.out.println("hammNum is: " + hammNum);
+            System.out.println("Station ID is: " + ID);
+        }
+    }
+
+
 
 }
