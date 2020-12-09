@@ -332,8 +332,6 @@ public class Main extends Application{
                 case 3-> Array_To_Display.addAll(Dist_Array_3);
                 case 4-> Array_To_Display.addAll(Dist_Array_4);
             }
-            stationListInitialize();
-            distanceUpdate();
             System.out.println("ID.length is equal to " + ID.length());
             System.out.println("hammNum is: " + hammNum);
             System.out.println("Station ID is: " + ID);
@@ -350,3 +348,4 @@ public class Main extends Application{
 
 
 }
+//add a "what is hamming distance?" hyperlink at the bottom because thats cool
