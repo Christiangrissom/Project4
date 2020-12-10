@@ -9,14 +9,22 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 
+import java.awt.*;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Scanner;
@@ -45,7 +53,6 @@ public class Main extends Application{
     TextField Distance_Three_T;
     TextField Distance_Four_T;
     TextField Add_Station_T;
-    Hyperlink hyperlink;
 
 
 
@@ -222,7 +229,22 @@ public class Main extends Application{
 
         initializeUser();
 
-        hyperlink =  new Hyperlink("https://en.wikipedia.org/wiki/Hamming_distance");
+
+
+        Font hyperLink_Font = Font.font("Verdana", FontWeight.THIN, 10);
+        Hyperlink hyperlink =  new Hyperlink("What is hamming distance?");
+        hyperlink.setFont(hyperLink_Font);
+        hyperlink.setOnAction(e -> {
+            if(Desktop.isDesktopSupported())
+            {
+                try {
+                    Desktop.getDesktop().browse(new URI("https://en.wikipedia.org/wiki/Hamming_distance"));
+                } catch (IOException | URISyntaxException e1) {
+                    e1.printStackTrace();
+                }
+            }
+        });
+        layout.add(hyperlink,0,13);
 
 
         gridPadding = new Insets(10,10,10,10);
@@ -384,4 +406,3 @@ public class Main extends Application{
 
 
 }
-//add a "what is hamming distance?" hyperlink at the bottom because thats cool
