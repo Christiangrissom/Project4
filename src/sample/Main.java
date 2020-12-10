@@ -21,7 +21,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Scanner;
 
-
+/**
+ * @author Christian Grissom
+ * @version 1.0
+ */
 public class Main extends Application{
     ComboBox Dropdown;
     ListView StationList;
@@ -42,6 +45,7 @@ public class Main extends Application{
     TextField Distance_Three_T;
     TextField Distance_Four_T;
     TextField Add_Station_T;
+    Hyperlink hyperlink;
 
 
 
@@ -67,7 +71,6 @@ public class Main extends Application{
     Insets gridPadding;
     Slider slider;
     GridPane layout;
-    Controller c = new Controller();
 
 
     @Override
@@ -219,6 +222,8 @@ public class Main extends Application{
 
         initializeUser();
 
+        hyperlink =  new Hyperlink("https://en.wikipedia.org/wiki/Hamming_distance");
+
 
         gridPadding = new Insets(10,10,10,10);
         layout.setPadding(gridPadding);
@@ -232,6 +237,9 @@ public class Main extends Application{
         primaryStage.show();
     }
 
+    /**
+     * initializeUser() is used to initialize the User_Console, and is used to clean up the code a bit
+     */
     private void initializeUser() {
         User_Console.setWrapText(true);
         User_Console.setMaxWidth(180);
@@ -241,11 +249,18 @@ public class Main extends Application{
         layout.add(User_Console,1,4);
     }
 
+    /**
+     * ChangeUser() updates the text to the right of the list of stations. It is very important,
+     * as it is the only way of communicating with the user directly.
+     * @param text The string that User_Console will project.
+     */
     public void changeUser(String text){
         User_Console.setText(text);
     }
 
-
+    /**
+     *Initializes StationList listview. Using this format can help simplify creating and displaying lists.
+     */
     private void stationListInitialize() {
         ObservableList<String> names = FXCollections.observableArrayList(Array_To_Display);
         StationList = new ListView<String>(names);
@@ -253,6 +268,9 @@ public class Main extends Application{
         layout.add(StationList,0,4);
     }
 
+    /**
+     * InitializeDD() initializes the dropdown menu. It is also used to update the menu.
+     */
     private void initializeDD() {
         ObservableList<String> Drop = FXCollections.observableArrayList(DropD);
         Dropdown = new ComboBox(Drop);
@@ -262,11 +280,15 @@ public class Main extends Application{
 
 
     public static void main(String[] args) {
-            initialize();
+            initializeDropDArray();
             launch(args);
     }
 
-    private static void initialize() {
+    /**
+     * InitializeDropDArray() initializes the dropdown array, clearing all the previous info and creating a new list of station IDs (based off Mesonet.txt)
+     * This is called inside of main to ensure it contains every required station. All custom stations are deleted when called.
+     */
+    private static void initializeDropDArray() {
         DropD.clear();
         try {
             FileReader file = new FileReader("Mesonet.txt");
@@ -282,6 +304,12 @@ public class Main extends Application{
 
     }
 
+    /**
+     * testForSimilar just checks whether the dropdown menu contains the new station ID. If so, the user is informed
+     * that the station with that ID already exists. If the word is new and is 4 characters, it is added to the dropdown
+     * menu.
+     * @param ID The string that represents the 4 character station ID.
+     */
     public void testForSimilar(String ID){
         if(DropD.contains(ID)){
             changeUser("That station ID already exists!");
@@ -296,7 +324,16 @@ public class Main extends Application{
             initializeDD();
         }
     }
-    public void calculation_HD(int hammNum, String ID){//modify SL to fit the list of stations
+
+    /**
+     * calculation_HD() is used to compare a singular station to the rest in the dropdown list. This singular station is
+     * the param ID. All arrays are cleared at the beginning of each use, which ensures that nothing within the arrays
+     * can cause issues elsewhere in the code. Four different arrays are created, which store the respective ID compared
+     * to that respective hamming distance.
+     * @param hammNum The hamming distance requested by the user.
+     * @param ID The station being focused on. This station will serve as the ID to compare the other ID's to.
+     */
+    public void calculation_HD(int hammNum, String ID){
         int NumOfChar = 4;
         int diffChars = 0;
         Array_To_Display.clear();
@@ -312,10 +349,7 @@ public class Main extends Application{
                 for(int y = 0; y<NumOfChar; y++){
                 if(ID.charAt(y)!=DropD.get(x).charAt(y)){
                     diffChars++;
-                }
-
-
-
+                    }
                 }
                 switch (diffChars) {
                     case 0-> {}
@@ -332,12 +366,14 @@ public class Main extends Application{
                 case 3-> Array_To_Display.addAll(Dist_Array_3);
                 case 4-> Array_To_Display.addAll(Dist_Array_4);
             }
-            System.out.println("ID.length is equal to " + ID.length());
-            System.out.println("hammNum is: " + hammNum);
-            System.out.println("Station ID is: " + ID);
         }
     }
 
+    /**
+     * distanceUpdate() is called when the button Calculate_HD is pressed. This method assigns the correct number of
+     * stations with that of the correct hamming distance. The reason there is no initialize distance is because distance
+     * can update at any time, so initializing it is easier to do when adding it to the scene.
+     */
     private void distanceUpdate() {
         Distance_Zero_T.setText("1");
         Distance_One_T.setText(String.valueOf(Dist_Array_1.size()));
